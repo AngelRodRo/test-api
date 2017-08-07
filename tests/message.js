@@ -42,8 +42,8 @@ describe('Message',()=>{
             expect(Message.receiveMessages).to.be.a('Function');
             expect(Message.sentMessages).to.be.a('Function')
             
-            // expect(Message.translateMessage).to.be.a('Function');
-            // expect(Message.listMessagesForLanguage).to.be.a('Function');
+            expect(Message.translateMessage).to.be.a('Function');
+            expect(Message.listMessagesForLanguage).to.be.a('Function');
 
             done();
         })

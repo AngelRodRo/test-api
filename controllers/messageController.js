@@ -71,7 +71,6 @@ module.exports = {
             }).catch((err)=>{
                 error.message = "Check the details for more information";
                 error.details = err.toString();
-                console.log(error);
                 return res.status(503).send(error);
             })
     },

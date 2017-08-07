@@ -9,7 +9,16 @@ let router = (function(){
 
     //Functions for recognize http methods
     let methods = {
-        get (name,cb) {
+        get (name,...args) {
+            
+            let cb,md;
+            if(args.length==2){
+                cb = args[1];
+                md = args[0];
+                mRoutes.push(md);
+            }else{
+                cb = args[0];
+            }
             let route = {
                 pathname:name,
                 method:"GET",
@@ -18,7 +27,15 @@ let router = (function(){
             mRoutes.push(route)
         },
 
-        post(name,cb) {
+        post(name,...args) {
+            let cb,md;
+            if(args.length==2){
+                cb = args[1];
+                md = args[0];
+                mRoutes.push(md)
+            }else{
+                cb = args[0];
+            }
             let route = {
                 pathname:name,
                 method:"POST",
@@ -27,7 +44,17 @@ let router = (function(){
             mRoutes.push(route)
         },
         
-        put (name,cb) {
+        put (name,...args) {
+
+            let cb,md;
+            if(args.length==2){
+                cb = args[1];
+                md = args[0];
+                mRoutes.push(md)
+            }else{
+                cb = args[0];
+            }
+
             let route = {
                 pathname:name,
                 method:"PUT",
@@ -36,7 +63,16 @@ let router = (function(){
             mRoutes.push(route);
         },
 
-        delete(name,cb){
+        delete(name,...args){
+            let cb,md;
+            if(args.length==2){
+                cb = args[1];
+                md = args[0];
+                mRoutes.push(md)
+            }else{
+                cb = args[0];
+            }
+
             let route = {
                 pathname:name,
                 method:"DELETE",
@@ -47,17 +83,40 @@ let router = (function(){
     }
 
     // Add a route or group of routes with prefix
-    let use = (name,router)=> {
-        let routes = router.routes.slice();
-        if(name){
-            for (let i = 0,route; route = routes[i]; i++) {
-                route.pathname = name + route.pathname;
-            }
-
+    let use = function(){
+        var args = arguments;
+        if(args[0] instanceof Function){
+            return mRoutes.push(args[0])
         }
-        mRoutes.push(...routes);
+
+        if(args[0]){
+            let routes = args.length? args[1].routes.slice() : [];
+            for (let i = 0,route; route = routes[i]; i++) {
+                route.pathname = args[0] + route.pathname;
+            }
+            mRoutes.push(...routes);
+        }
         return;
     }
+
+    var promiseWhile = function(condition, action) {
+        
+        var resolver = Promise.defer();
+
+        var loop = function() {
+            
+            if (condition()) return resolver.resolve();
+
+            return Promise.resolve(action())
+                .then(loop)
+                .catch(resolver.reject);
+        };
+
+        process.nextTick(loop);
+
+        return resolver.promise;
+    }
+
 
     // Check each route in array and execute each funcion correspondent
 	let check =  function(pathname,req,res) {
@@ -68,26 +127,60 @@ let router = (function(){
 			this.static("./public",pathname,req,res);
 		}
 		else{
-			for (var i = 0,route; route = mRoutes[i]; i++) {
-			    if(verifyPath(route,pathname, req) ){	
-			    	if(route.method == req.method ){
-					    return route.cb(req,res);
-			    	}
-			    }
-            }
-            
-            res.writeHead(404,{})
-            res.end("Not found");
-            return ;
-		}
+            let flag = false,i = 0;
+            if(mRoutes.length){
+                promiseWhile(function() {
+                // Condition for stopping
+                return flag;
+            }, function() {
+                return new Promise(function(resolve, reject) {
+                    
+                    if(!(mRoutes[i] instanceof Function)){
+                        
+                        if(verifyPath(mRoutes[i],pathname, req) ){	
+                            
+                            if(mRoutes[i].method == req.method ){
 
+                                mRoutes[i].cb(req,res);
+                                flag = true;
+                                resolve();
+                            }
+                        }
+                        
+                    }else{
+                        mRoutes[i](req,res,function(sent = false){
+                            flag = sent;
+
+                            resolve();
+                        })
+                    }
+                    i++;
+                
+                });
+                }).then(function() {
+
+                    if(i==mRoutes.length-1){
+                        res.writeHead(404,{})
+                        res.end("Not found");
+                        return;
+                    }
+                });
+            }else{
+                res.writeHead(404,{})
+                        res.end("Not found");
+                        return;
+            }
+			
+		}
     }
     
     let verifyPath = function(route, pathname, req){
+        
         let fr = route.pathname.split("/");
         let ds = pathname.split("/");
         let params = {}
 
+        
         if(fr.length===ds.length){
             for (let i = 0; i < fr.length; i++) {
                 if(fr[i]!=ds[i]) {

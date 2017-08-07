@@ -1,6 +1,6 @@
 var router = require('../router.js')();
 var userController = require('../controllers/userController');
-
+var middleware = require('../middleware/authenticate')
 
 /**
  * @api {post} /create Create a new user
@@ -23,7 +23,7 @@ var userController = require('../controllers/userController');
  *  }
  */
 
-router.post('/',userController.create);
+router.post('/',middleware.authenticate, userController.create);
 
 router.get('/',userController.getAll);
 

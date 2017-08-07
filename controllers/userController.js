@@ -18,22 +18,22 @@ module.exports = {
         let { name, email, password } = req.body;
         let error = {}
 
-
+        
         if(!name) {
             error.message = "Ocurred an error while registering, you need put an name before continue";
             error.code = "41000";
-            return;
+            return res.status(503).send(error);
         }
         if(!email) {
             error.message = "Ocurred an error while registering, you need put an email before continue";
             error.code = "41000";
-            return;
+            return res.status(503).send(error);
         }
 
         if(!password){
             error.message = "Ocurred an error while registering, you need put an password before continue";
             error.code = "41000";
-            return;            
+            return res.status(503).send(error);
         }
 
         User.create({
@@ -50,7 +50,10 @@ module.exports = {
             return res.json(_user);
 
         }).catch((err)=>{
-            console.log(err)
+            let error = {}
+            error.message = "Ocurred an error check the details for more information";
+            error.details = err.toString();
+            return res.status(503).send(error);
         })
 
     }

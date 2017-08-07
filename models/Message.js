@@ -14,10 +14,14 @@ let messageSchema = new Schema({
         type:Boolean,
         default:true
     },
-    userId: { type:Schema.Types.ObjectId, ref:'User' }
+    userId: { type:Schema.Types.ObjectId, ref:'User' },
+    createdAt:{
+        type:Date,
+        default: new Date()
+    }
 });
 
-messageSchema.pre('save', function(next) {
+messageSchema.pre('save', (next)=> {
     let doc = this;
     Counter.findByIdAndUpdate({_id: 'messageId'}, {$inc: { seq: 1} }, function(error, counter)   {
         if(error)
@@ -26,6 +30,8 @@ messageSchema.pre('save', function(next) {
         next();
     });
 });
+
+
 
 messageSchema.statics.createMessageFromUser = function(userId,data){
     let promise = User.findOne({id:userId}).exec();
@@ -53,7 +59,6 @@ messageSchema.statics.updateMessageFromUser = function(userId,id,data){
         return model.findOneAndUpdate({id:id },data).exec()
         
         }).catch((err)=>{
-            console.log(err)
         })
 
 }
