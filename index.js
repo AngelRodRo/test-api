@@ -18,12 +18,14 @@ if(mongoose.connection.readyState!=1){
 
 
 router.use("/api",index);
-    console.log(router.routes);
 
 let sv = http.createServer((req,res)=>{
 
     let pathname = url.parse(req.url).pathname;
-    
+    req.body = "";
+    req.params = "";
+    req.query = "";
+
     // Extends function from response object for return a json object
     res.json  = function(data){
         this.writeHead(200,{ 'Content-Type': 'application/json'});
@@ -38,7 +40,6 @@ let sv = http.createServer((req,res)=>{
     res.send = function(arg) {
 
         if(arg instanceof Number){
-            console.log('fuck you')
             let rCode  = code || 200;
             this.writeHead(rCode,{ })
             this.end();

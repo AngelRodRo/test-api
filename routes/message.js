@@ -27,8 +27,9 @@ var messageController = require('../controllers/messageController');
 router.post('/',messageController.create);
 router.delete('/:id',messageController.delete);
 router.put('/:id',messageController.update);
-router.put('/receive',messageController.receive);
-router.put('/sent',messageController.sent);
-
+router.get('/receive',messageController.receive);
+router.get('/sent',messageController.sent);
+router.get('/:lang',messageController.getMessagesForLanguage);
+router.get('/:id/translate/:lang',messageController.translate);
 
 module.exports = router;

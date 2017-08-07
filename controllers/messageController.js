@@ -1,12 +1,14 @@
 'use strict';
 let Message = require('../models/Message'),
+    request = require('request'),
+    config = require('../config/config.json'),
      User = require('../models/User');
 module.exports = {
 
 
     create(req,res){
 
-        let userId = req.body.userId ;
+        var userId = req.body.userId || req.headers.id ||  req.headers.user.id;
         let {name, contents,lang,to} = req.body;
         let error = {}
 
@@ -93,11 +95,86 @@ module.exports = {
             })
     },
     receive(req,res){
-        var userId 
+        var userId = req.body.userId || req.headers.id ||  req.query.userId;
+        let error = {}
+        Message.receiveMessages(userId)
+            .then((messages)=>{
+                if(!messages){
+                    error.message = "You don't have receive messages !";
+                    return res.status(503).send(error)
+                }
+                return res.json(messages);
+            }).catch((err)=>{
+                error.message = "Ocurred an error, check the details for more information";
+                error.details = err.toString();
+                return res.status(503).send(error)
+
+            })
     },
 
-    sent(req,res){
+    translate(req,res){
 
+        let tLang = req.params.lang;
+        let text = "dsadsa";
+        let messageId = req.params.id;
+
+        let error = {}
+
+        Message.findOne({id:messageId}).exec().then((message)=>{
+            let fLang = message.lang;
+            let lang = fLang + "-" + tLang;
+
+            let url = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${config.yandexAPIKEY}&text=${message.contents}&lang=${lang}`;
+            request(url,(err,response,body)=>{
+                let data = JSON.parse(body);
+                let translate = data.text[0];
+                let resp = {message,translate}
+                return res.json(resp);
+            })
+        })
+        .catch((err)=>{
+            error.message = "Ocurred an error, check the details for more information";
+            error.details = err.toString();
+            return res.status(503).send(error);
+        })
+    },
+
+    getMessagesForLanguage(req,res){
+
+        let lang = req.params.lang;
+        let error = {};
+        Message.getMessagesForLanguage(lang)
+            .then((messages)=>{
+                let count = messages.length;
+                let objects = messages;
+
+                let data = { count, objects};
+                return res.json(data);
+            })
+            .catch((error)=>{
+                error.message = "Ocurred an error, check the details for more information";
+                error.details = err.toString();
+                return res.status(503).send(error);
+            })
+    },
+    
+
+    sent(req,res){
+        var userId = req.body.userId || req.headers.id || req.query.userId;
+        let error = {}
+        Message.sentMessages(userId)
+            .then((messages)=>{
+                if(!messages){
+                    error.message = "You don't have sent messages !";
+                    return res.status(503).send(error)
+                }
+                return res.json(messages);
+            }).catch((err)=>{
+                error.message = "Ocurred an error, check the details for more information";
+                error.details = err.toString();
+                return res.status(503).send(error)
+
+            })
     }
 
 

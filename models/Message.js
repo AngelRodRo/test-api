@@ -67,16 +67,29 @@ messageSchema.statics.deleteMessageFromUser = function(id,userId){
 
 }
 
-messageSchema.statics.receiveMessages = function(userId){
+//TODO: Make tests for this
+messageSchema.statics.receiveMessages = function(id){
 
-    let promise = User.findOne({_id:userId}).exec();
-    return promise.then((user)=>this.find({to:user.name}).exec());
+    let promise = User.findOne({id:id}).exec();
+    return promise.then((user)=>{
+        if(!user) throw 'No exist an user with this Id';
+        this.find({to:user.name}).exec()
+    });
 }
 
-messageSchema.statics.sentMessages = function(userId){
+//TODO: Make tests for this
+messageSchema.statics.sentMessages = function(id){
 
-    let promise = User.findOne({_id:userId}).exec();
-    return promise.then((user)=>this.find({from:user.name}).exec());
+    let promise = User.findOne({id:id}).exec();
+    return promise.then((user)=>{
+        if(!user) throw 'No exist an user with this Id';
+        this.find({from:user.name}).exec()
+    });
+}
+
+messageSchema.statics.getMessagesForLanguage = function(lang){
+    let promise = this.find({lang:lang}).exec();
+    return promise;
 }
 
 module.exports = mongoose.model('Message',messageSchema);
