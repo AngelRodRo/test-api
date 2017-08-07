@@ -1,0 +1,23 @@
+{
+  "name": "test-metrodigi",
+  "version": "1.0.0",
+  "description": "Test of Metrodigi Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/",
+    "apidoc": "",
+    "start": ""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apidoc": "^0.17.6",
+    "bcrypt": "^1.0.2",
+    "chai": "^4.1.1",
+    "chai-as-promised": "^7.1.1",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.5.0",
+    "mongodb": "^2.2.30",
+    "mongoose": "^4.11.5"
+  }
+}
