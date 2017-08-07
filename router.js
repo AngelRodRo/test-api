@@ -69,13 +69,9 @@ let router = (function(){
 		}
 		else{
 			for (var i = 0,route; route = mRoutes[i]; i++) {
-			    if(route.pathname == pathname){		    
+			    if(verifyPath(route,pathname, req) ){	
 			    	if(route.method == req.method ){
 					    return route.cb(req,res);
-			    	}else{	
-                        res.writeHead(404,{ })
-                        res.end("Not found");
-				    	return;  	
 			    	}
 			    }
             }
@@ -85,7 +81,28 @@ let router = (function(){
             return ;
 		}
 
-	}
+    }
+    
+    let verifyPath = function(route, pathname, req){
+        let fr = route.pathname.split("/");
+        let ds = pathname.split("/");
+        let params = {}
+
+        if(fr.length===ds.length){
+            for (let i = 0; i < fr.length; i++) {
+                if(fr[i]!=ds[i]) {
+                    let index = fr[i].indexOf(":")
+                    if(index<0) return false;
+
+                    var param = fr[i].slice(1);
+                    params[param] = ds[i];
+                }
+            }
+            req.params = params;
+            return true;
+        }
+        return false;
+    }
 
     // In case if a request is for statics assets
 	let statics = function(route,pathname,req,res) {

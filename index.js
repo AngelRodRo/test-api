@@ -9,11 +9,16 @@ let http = require('http'),
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost/testmetro',()=>{
-    console.log('Esta conectado')
-});
+if(mongoose.connection.readyState!=1){
+    mongoose.connect('mongodb://localhost/testmetro',()=>{
+        console.log('Esta conectado')
+    });
+}
+
+
 
 router.use("/api",index);
+    console.log(router.routes);
 
 let sv = http.createServer((req,res)=>{
 
@@ -25,21 +30,27 @@ let sv = http.createServer((req,res)=>{
         this.end(JSON.stringify(data));
     }
 
+    res.status = function(code){
+        this.writeHead(code,{ })
+        return this;
+    }
 
-    res.send = function(file,code) {
+    res.send = function(arg) {
 
-        if(!code) code = 200;
-
-        if(file){
-            this.writeHead(200,{ 'Content-Type': 'text/html' })
-            this.write(file);
+        if(arg instanceof Number){
+            console.log('fuck you')
+            let rCode  = code || 200;
+            this.writeHead(rCode,{ })
+            this.end();
+            return this;
         }
-        this.end();
+
+        this.end(JSON.stringify(arg));
+        return this;
     }
         
-    if(req.method === "POST"){
+    if(req.method === "POST" || req.method == "PUT"){
         // Return data from body of POST request
-        console.log('Entro aqui')
         let body = "";
         req.on('data', function (chunk) {
             body += String(chunk);

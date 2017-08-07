@@ -2,7 +2,7 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let User = require('./User');
-
+let Counter = require('./Counter');
 
 let messageSchema = new Schema({
     id: Number,
@@ -10,28 +10,31 @@ let messageSchema = new Schema({
     to: String,
     contents: String,
     lang: String,
-    open: Boolean,
+    open: {
+        type:Boolean,
+        default:true
+    },
     userId: { type:Schema.Types.ObjectId, ref:'User' }
 });
 
 messageSchema.pre('save', function(next) {
-    this.constructor.count({},(err,c)=>{
-        this.id = c + 1;
-    	return next();
+    let doc = this;
+    Counter.findByIdAndUpdate({_id: 'messageId'}, {$inc: { seq: 1} }, function(error, counter)   {
+        if(error)
+            return next(error);
+        doc.id = counter.seq;
+        next();
     });
 });
 
 messageSchema.statics.createMessageFromUser = function(userId,data){
-    let promise = User.findOne({name:"user"}).exec();
+    let promise = User.findOne({id:userId}).exec();
 
     return promise
         .then((user)=> {
             data.from = user.name;
             return this.create(data);
-        })
-        .catch((err)=>{
-
-        })
+        });
 }
 
 messageSchema.statics.listMySentMessages = function(userId){
@@ -39,5 +42,41 @@ messageSchema.statics.listMySentMessages = function(userId){
     return promise;
 }
 
+// TODO: Add validation for user if it isn't his message
+messageSchema.statics.updateMessageFromUser = function(userId,id,data){
+    let promise = User.findOne({_id:userId}).exec();
+    let model = this;   
+
+    return promise  
+        .then((user)=> {
+            
+        return model.findOneAndUpdate({id:id },data).exec()
+        
+        }).catch((err)=>{
+            console.log(err)
+        })
+
+}
+
+// TODO: Add validation for user if it isn't his message
+messageSchema.statics.deleteMessageFromUser = function(id,userId){
+    let promise = User.findOne({_id:userId}).exec();
+    
+    return promise
+            .then((user)=> this.remove({id:id}));
+
+}
+
+messageSchema.statics.receiveMessages = function(userId){
+
+    let promise = User.findOne({_id:userId}).exec();
+    return promise.then((user)=>this.find({to:user.name}).exec());
+}
+
+messageSchema.statics.sentMessages = function(userId){
+
+    let promise = User.findOne({_id:userId}).exec();
+    return promise.then((user)=>this.find({from:user.name}).exec());
+}
 
 module.exports = mongoose.model('Message',messageSchema);

@@ -3,7 +3,7 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let bcrypt = require('bcrypt');
 let saltRounds = 10;
-
+let Counter = require('./Counter');
 let userSchema = new Schema({
     id: String,
     name : String,
@@ -13,9 +13,18 @@ let userSchema = new Schema({
 
 userSchema.pre('save', function(next) {
 	let salt = bcrypt.genSaltSync(saltRounds);
-	let hash = bcrypt.hashSync(this.password, salt);
-	this.password = hash;
-	next();
+    let hash = bcrypt.hashSync(this.password, salt);
+    let doc = this;
+    Counter.findByIdAndUpdate({_id: 'userId'}, {$inc: { seq: 1} }, function(error, counter)   {
+        if(error)
+            return next(error);
+        doc.id = counter.seq;
+        doc.password = hash;
+        next();
+    });
+
+
+	
 });
 
 userSchema.statics.login = function(email,password){
