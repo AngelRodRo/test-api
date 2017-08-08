@@ -32,45 +32,45 @@ npm run test
 
 #### User
 
-
-            Route       |       Description       |    Method    |       Obs.                   |
-    --------------------------------------------------------------------------------------------
-    /api/users          |     Create a new user   |     POST     |  Return a "token" for auth   |
-    --------------------------------------------------------------------------------------------
-    /api/users/login    |     Login a user        |      POS     |  Return a "token" for auth   |
-    ---------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------
+    |        Route       |       Description       |    Method    |       Observations           |
+    ----------------------------------------------------------------------------------------------
+    |   /api/users       |     Create a new user   |     POST     |  Return a "token" for auth   |
+    ----------------------------------------------------------------------------------------------
+    |  /api/users/login  |     Login a user        |      POS     |  Return a "token" for auth   |
+    ----------------------------------------------------------------------------------------------
 
 #### Messages
 
     Authenticated routes need the following header :  { Authorization : token }
-
-            Route               |         Description               |  Method  |  Auth? | 
-    -------------------------------------------------------------------------------------
-        /api/messages           |       Return all messages         |   GET    |   No   | 
-    -------------------------------------------------------------------------------------
-        /api/messages/:id       |  Get a message from authenticated |   GET    |   Yes  |
-                                |   user                            |          |        |
-    -------------------------------------------------------------------------------------
-        /api/messages           |       Create a new message        |   POST   |  Yes   |
-    -------------------------------------------------------------------------------------
-        /api/messages/sent      |   Return sent messages of         |   GET    |  Yes   |  
-                                |   authenticated user              |          |        |
-    -------------------------------------------------------------------------------------
-     /api/messages/receive      |   Return receive messages of      |   GET    |  Yes   |  
-                                |   authenticated user              |          |        |
-    -------------------------------------------------------------------------------------
-     /api/messages/:id          |   Update a message from           |   PUT    |  Yes   |  
-                                |   authenticated user              |          |        |
-    -----------------------------------------------------------------------------------
-     /api/messages/:id          |   Delete a message from           |  DELETE  |  Yes   |  
-                                |   authenticated user              |          |        |
-    -------------------------------------------------------------------------------------
-     /api/messages/:id/         |  Translate a message from origin  |   GET    |  No    |
-        translate/:lang         |  lang to another lang             |          |        |
-    -------------------------------------------------------------------------------------
-      /api/messages/:lang       | List and count messages of a      |   GET    |  No    |
-                                | language such of user             |          |        |
-
+    ----------------------------------------------------------------------------------
+    |        Route           |            Description            |  Method  |  Auth? | 
+    ---------------------------------------------------------------------------------
+    | /api/messages          |  Return all messages              |   GET    |   No   | 
+    ---------------------------------------------------------------------------------
+    | /api/messages/:id      |  Get a message from authenticated |   GET    |   Yes  |
+    |                        |   user                            |          |        |
+    ---------------------------------------------------------------------------------
+    | /api/messages          |  Create a new message             |   POST   |  Yes   |
+    ---------------------------------------------------------------------------------
+    | /api/messages/sent     |  Return sent messages of          |   GET    |  Yes   |  
+    |                        |  authenticated user               |          |        |
+    ---------------------------------------------------------------------------------
+    | /api/messages/receive  |  Return receive messages of       |   GET    |  Yes   |  
+    |                        |  authenticated user               |          |        |
+    ---------------------------------------------------------------------------------
+    | /api/messages/:id      |  Update a message from            |   PUT    |  Yes   |  
+    |                        |  authenticated user               |          |        |
+    ---------------------------------------------------------------------------------
+    | /api/messages/:id      |  Delete a message from            |  DELETE  |  Yes   |  
+    |                        |  authenticated user               |          |        |
+    ---------------------------------------------------------------------------------
+    | /api/messages/:id/     |  Translate a message from origin  |   GET    |  No    |
+    |    translate/:lang     |  lang to another lang             |          |        |
+    ---------------------------------------------------------------------------------
+    | /api/messages/:lang    |  List and count messages of a     |   GET    |  No    |
+    |                        |  language such of user            |          |        |
+    ---------------------------------------------------------------------------------
 
 ## References
 
@@ -78,7 +78,7 @@ More details about it, check this: https://angelrodro.github.io./
 
 Test my api : https://test-metro.herokuapp.com/api/
 
-Check my github : 
+Check my github : https://github.com/AngelRodRo/test-api
 
 Thanks you! =)
 
