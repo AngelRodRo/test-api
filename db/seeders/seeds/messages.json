@@ -1,0 +1,50 @@
+[
+    {
+        "id":1,
+        "lang":"en",
+        "contents":"Fly away!",
+        "open":true
+    },
+    {
+        "id":2,
+        "lang":"en",
+        "contents":"it's sound great!",
+        "open":true
+    },
+    {
+        "id":3,
+        "lang":"en",
+        "contents":"How are you?",
+        "open":true
+    },
+    {
+        "id":4,
+        "lang":"en",
+        "contents":"Hey!",
+        "open":true
+    },
+    {
+        "id":5,
+        "lang":"en",
+        "contents":"Hello!",
+        "open":true
+    },
+    {
+        "id":6,
+        "lang":"en",
+        "contents":"Fine",
+        "open":true
+    },
+    {
+        "id":7,
+        "lang":"en",
+        "contents":"It's seems normal",
+        "open":true
+    },
+    {
+        "id":8,
+        "lang":"en",
+        "contents":"I love JS",
+        "open":true
+    }
+]

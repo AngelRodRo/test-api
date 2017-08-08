@@ -1,8 +1,11 @@
 'use strict';
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-let User = require('./User');
-let Counter = require('./Counter');
+let mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    User = require('./User'),
+    Counter = require('./Counter'),
+    dateHelper = require('../helpers/dates'),
+    request = require('request'),
+    config = require('../config/config.json');
 
 let messageSchema = new Schema({
     id: Number,
@@ -21,12 +24,28 @@ let messageSchema = new Schema({
     }
 });
 
+//Pre hook for check if the user is available send a messages in an hour
+messageSchema.pre('save', function(next) {
+    let {start,end} =  dateHelper.getIntervalsFromTodayinHours();
+    
+    this.constructor.count({
+        createdAt: { $gte: start, $lte: end },
+        from: this.from
+    },(err,count)=>{
+        console.log(count)
+        if(count<=process.env.limit) next();
+        let error = new Error('Limit of messages exceed, wait an hour please');
+        next(error);
+    })
+});
+
+// Pre hook for create a autoincrement id for this model
 messageSchema.pre('save', (next)=> {
     let doc = this;
     Counter.findByIdAndUpdate({_id: 'messageId'}, {$inc: { seq: 1} }, function(error, counter)   {
         if(error)
             return next(error);
-        doc.id = counter.seq;
+        if(counter)   doc.id = counter.seq;
         next();
     });
 });
@@ -50,15 +69,12 @@ messageSchema.statics.listMySentMessages = function(userId){
 
 // TODO: Add validation for user if it isn't his message
 messageSchema.statics.updateMessageFromUser = function(userId,id,data){
-    let promise = User.findOne({_id:userId}).exec();
+    let promise = User.findOne({id:userId}).exec();
     let model = this;   
 
     return promise  
-        .then((user)=> {
-            
-        return model.findOneAndUpdate({id:id },data).exec()
-        
-        }).catch((err)=>{
+        .then((user)=> { 
+            return model.findOneAndUpdate({id:id },data).exec()
         })
 
 }
@@ -72,7 +88,6 @@ messageSchema.statics.deleteMessageFromUser = function(id,userId){
 
 }
 
-//TODO: Make tests for this
 messageSchema.statics.receiveMessages = function(id){
 
     let promise = User.findOne({id:id}).exec();
@@ -82,7 +97,6 @@ messageSchema.statics.receiveMessages = function(id){
     });
 }
 
-//TODO: Make tests for this
 messageSchema.statics.sentMessages = function(id){
 
     let promise = User.findOne({id:id}).exec();
@@ -91,6 +105,28 @@ messageSchema.statics.sentMessages = function(id){
         if(!user) throw 'No exist an user with this Id';
         return this.find({from:user.name}).exec()
     });
+}
+
+// Translate using Yandex API using the following scheme "es-en" i.e. from Spanish to English
+messageSchema.statics.translateMessage = function(id,tLang){
+
+    return this.findOne({id:id}).exec().then((message)=>{
+            let fLang = message.lang;
+            let lang = fLang + "-" + tLang;
+
+            let url = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${config.yandexAPIKEY}&text=${message.contents}&lang=${lang}`;
+            
+            return new Promise((resolve,reject)=>{
+                request(url,(err,response,body)=>{
+                    if(err) reject(err);
+                    let data = JSON.parse(body);
+                    let translate = data.text[0];
+                    let resp = {message,translate}
+                    return resolve(resp);
+                })
+            });  
+        })
+        
 }
 
 messageSchema.statics.getMessagesForLanguage = function(lang){

@@ -7,7 +7,7 @@ let fs = require('fs'),
 let router = (function(){
     let mRoutes = [];
 
-    //Functions for recognize http methods
+    //Functions for recognize http methods and add new object route to routes array
     let methods = {
         get (pathname,...args) {
             
@@ -81,6 +81,7 @@ let router = (function(){
     // Add a route or group of routes with prefix
     let use = function(){
         var args = arguments;
+        //Check if a function or a name with routes group
         if(args[0] instanceof Function){
             return mRoutes.push(args[0])
         }
@@ -95,6 +96,7 @@ let router = (function(){
         return;
     }
 
+    // Create a promise while
     var promiseWhile = function(condition, action) {
         
         var resolver = Promise.defer();
@@ -114,7 +116,7 @@ let router = (function(){
     }
 
 
-    // Check each route in array and execute each funcion correspondent
+    // Check each route in array and execute each function correspondent
 	let check =  function(pathname,req,res) {
 		if(pathname.split("/")[1] === "js" 
 			|| pathname.split("/")[1] === "css" 
@@ -125,6 +127,8 @@ let router = (function(){
 		else{
             let flag = false,i = 0;
             if(mRoutes.length){
+            //Executing the promise until find the path or find none
+            
              promiseWhile(function() {
                 return flag;
              }, function() {
@@ -134,7 +138,7 @@ let router = (function(){
                         if(verifyPath(mRoutes[i],pathname, req) ){	
                             if(mRoutes[i].method === req.method ){
                                 let index = i;
-                                
+                                //Check if a route has a middleware and execute its middleware before continue the principal function
                                 if(mRoutes[index].md){
                                     
                                     mRoutes[index].md(req,res,function( sent = false){
@@ -176,7 +180,8 @@ let router = (function(){
                 
                 });
                 }).then(function() {
-                    if(i==mRoutes.length-1){
+                    
+                    if(i==mRoutes.length){
                         res.writeHead(404,{})
                         res.end("Not found");
                         return;
@@ -191,13 +196,15 @@ let router = (function(){
 		}
     }
     
-    let verifyPath = function(route, pathname, req){
 
+    let verifyPath = function(route, pathname, req){
+        
         let fr = route.pathname.split("/");
         let ds = pathname.split("/");
         let params = {}
 
-        
+        // Verify the length and patterns for routes like "/api/:id/test"
+        // for get params values from url
         if(fr.length===ds.length){
             for (let i = 0; i < fr.length; i++) {
                 if(fr[i]!=ds[i]) {
@@ -214,42 +221,6 @@ let router = (function(){
         return false;
     }
 
-    // In case if a request is for statics assets
-	let statics = function(route,pathname,req,res) {
-
-		fs.readFile(route + "" + pathname, function (err, statics) {
-		    if(!statics){
-		    	res.writeHead(404);
-		    	res.end();
-		    	return;
-		    }
-
-		    var file = pathname,
-		    	ext = path.extname(file),
-		    	opts = {};
-
-			switch (ext) {
-				case '.js':
-		    		opts["Content-Type"]  = "text/javascript";
-					break;
-				case '.css':
-		    		opts["Content-Type"] = "text/css";
-					break;
-				case '.jpg':
-			    	opts["Content-Type"] = "text/jpeg";
-			    	break;
-		    	case '.png':
-			    	opts["Content-Type"] = "text/png";
-			    	break;	    	
-			}
-			
-	    	res.writeHead(200,opts);
-	    	res.write(statics);
-	    	res.end();
-
-
-		});
-    }
     
     return {
         get:methods.get,

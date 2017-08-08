@@ -2,54 +2,54 @@
 let Message = require('../models/Message'),
     request = require('request'),
     config = require('../config/config.json'),
-     User = require('../models/User');
+    User = require('../models/User');
+     
 module.exports = {
 
-
     create(req,res){
+            let userId = req.headers.user.id,
+                {name, contents,lang,to} = req.body,
+                error = {}
+
+            if(!contents) {
+                error.message = "Ocurred an error while creating, you need put the content before continue";
+                error.code = "41001";
+                return res.status(503).send(error);
+            }
+            if(!lang) {
+                error.message = "Ocurred an error while registering, you need put the lang before continue";
+                error.code = "41002";
+                return res.status(503).send(error);
+            }
+
+            if(!to){
+                error.message = "Ocurred an error while registering, you need put the destinatary before continue";
+                error.code = "41003";
+                return res.status(503).send(error);
+            }
+
+            Message.createMessageFromUser(userId,{
+                contents:contents,
+                lang:lang,
+                to:to
+            }).then((message)=>{
+                
+                return res.json(message);
+            }).catch((err)=>{
+                error.message = "Check the details for more information";
+                error.details = err.toString();
+                return res.status(503).send(error);
+            });
 
 
 
-        var userId = req.headers.user.id;
-        let {name, contents,lang,to} = req.body;
-        let error = {}
-
-        if(!contents) {
-            error.message = "Ocurred an error while creating, you need put the content before continue";
-            error.code = "41001";
-            return res.status(503).send(error);
-        }
-        if(!lang) {
-            error.message = "Ocurred an error while registering, you need put the lang before continue";
-            error.code = "41002";
-            return res.status(503).send(error);
-        }
-
-        if(!to){
-            error.message = "Ocurred an error while registering, you need put the destinatary before continue";
-            error.code = "41003";
-            return res.status(503).send(error);
-        }
-
-        Message.createMessageFromUser(userId,{
-            contents:contents,
-            lang:lang,
-            to:to
-        }).then((message)=>{
-            
-            return res.json(message);
-        }).catch((err)=>{
-            error.message = "Check the details for more information";
-            error.details = err.toString();
-            return res.status(503).send(error);
-        });
 
     },
 
     update(req,res){
-        let userId = req.headers.user.id;
-        let id = req.params.id;
-        let {contents,lang} = req.body;
+        let userId = req.headers.user.id,
+            id = req.params.id,
+            {contents,lang} = req.body;
 
         let data = {
             contents:contents,
@@ -82,7 +82,7 @@ module.exports = {
 
     delete(req,res){
 
-        var id = req.params.id;
+        let id = req.params.id;
 
         Message.deleteMessageFromUser(id)
             .then(()=>{
@@ -95,8 +95,10 @@ module.exports = {
             })
     },
     receive(req,res){
-        var userId = req.headers.user.id;
-        let error = {}
+
+        let userId = req.headers.user.id,
+            error = {};
+
         Message.receiveMessages(userId)
             .then((messages)=>{
                 if(!messages){
@@ -114,35 +116,26 @@ module.exports = {
 
     translate(req,res){
 
-        let tLang = req.params.lang;
-        let text = "dsadsa";
-        let messageId = req.params.id;
+        let tLang = req.params.lang,
+            messageId = req.params.id,
+            error = {}
 
-        let error = {}
-
-        Message.findOne({id:messageId}).exec().then((message)=>{
-            let fLang = message.lang;
-            let lang = fLang + "-" + tLang;
-
-            let url = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${config.yandexAPIKEY}&text=${message.contents}&lang=${lang}`;
-            request(url,(err,response,body)=>{
-                let data = JSON.parse(body);
-                let translate = data.text[0];
-                let resp = {message,translate}
-                return res.json(resp);
+        Message.translateMessage(messageId,tLang)
+            then((response)=>{
+                return res.json(response);
+            })    
+            .catch((err)=>{
+                error.message = "Ocurred an error, check the details for more information";
+                error.details = err.toString();
+                return res.status(503).send(error);
             })
-        })
-        .catch((err)=>{
-            error.message = "Ocurred an error, check the details for more information";
-            error.details = err.toString();
-            return res.status(503).send(error);
-        })
     },
 
     getMessagesForLanguage(req,res){
 
-        let lang = req.params.lang;
-        let error = {};
+        let lang = req.params.lang,
+            error = {};
+
         Message.getMessagesForLanguage(lang)
             .then((messages)=>{
                 let count = messages.length;
@@ -160,12 +153,12 @@ module.exports = {
     
 
     sent(req,res){
-        let userId = req.headers.user.id;
-        let error = {}
-        console.log(userId)
+
+        let userId = req.headers.user.id,
+            error = {}
+
         Message.sentMessages(userId)
             .then((messages)=>{
-                console.log(messages)
                 if(!messages){
                     error.message = "You don't have sent messages !";
                     return res.status(503).send(error)

@@ -10,14 +10,15 @@ chai.use(chaiHttp);
 let should = chai.should();
 let Message = require('../models/Message');
 let server = require('../index.js');
+let User = require('../models/User');
+let config = require('../config/config');
 
 describe('Message',()=>{
 
     beforeEach(function(done){
         mongoose.Promise = global.Promise;
         if(mongoose.connection.readyState!=1){
-
-            mongoose.connect('mongodb://localhost/testmetro', { useMongoClient: true } ,()=>{
+            mongoose.connect(config.dbquery, { useMongoClient: true } ,()=>{
                 done()
             });
         }else{
@@ -25,11 +26,7 @@ describe('Message',()=>{
         }
     })
 
-    beforeEach((done)=>{
-        Message.remove({},()=>{
-            done();
-        })
-    })
+
 
 
     describe('Init functions',()=>{
@@ -65,7 +62,7 @@ describe('Message',()=>{
                 open:true
             };
 
-            return Message.createMessageFromUser("598896a4e89d4546a158fa65",data).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','id','to','from','open', 'contents','lang','userId');
+            return Message.createMessageFromUser(1,data).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','to','from','open', 'contents','lang','createdAt');
 
         });
 
@@ -74,16 +71,59 @@ describe('Message',()=>{
                 contents:"dadas"
             }
 
-            return Message.updateMessageFromUser("598896a4e89d4546a158fa65",30,data).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','id','to','from','open', 'contents','lang');
+            return Message.updateMessageFromUser(1,4,data).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','id','to','from','open', 'contents','lang','createdAt');
 
         });
 
-        it('it should DELETE a message for id',()=>{
+        it('it should DELETE a message for id',(done)=>{
+            done();
             //return Message.deleteMessageFromUser(47).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','id','to','from','open', 'contents','lang');
         });
+
+        it('it should return all receive messages from user id ',()=>{
+            return Message.receiveMessages(1).then((messages)=>messages).should.eventually.to.be.an('array');
+        })
+
+        it('it should return all sent messages from user id ',()=>{
+            return Message.receiveMessages(1).then((messages)=>messages).should.eventually.to.be.an('array');
+        })
+
+        it('it should translate a message',()=>{
+            return Message.translateMessage(1,'es').then((messages)=>messages).should.eventually.to.be.an('object');
+        })
+
+        it('it should fetch all messages in a determinated language',()=>{
+            return Message.getMessagesForLanguage('en').then((messages)=>messages).should.eventually.to.be.an('array');
+        })
+
     })
 
     describe('API REQUEST',()=>{
+
+        let token = "";
+
+        beforeEach((done)=>{
+            
+            let data = {
+                name:'Angel',
+                email: 'angel@gmail.com',
+                password:'123456'
+            };
+
+            User.create(data)
+                .then(()=> {
+                    chai.request(server)
+                        .post('/api/users/login')
+                        .send(data)
+                        .end((err,res)=>{
+                            token = res.body.token;
+                            done();
+                        });
+                })
+
+            
+        })
+
         it('it should CREATE a new message with user id',(done)=>{
             let data = {            
                 to:"Alvaro",
@@ -94,6 +134,7 @@ describe('Message',()=>{
 
             chai.request(server)
                 .post('/api/messages/')
+                .set('Authorization',token)
                 .send(data)
                 .end((err,res)=>{
                     res.should.have.status(200);
@@ -107,13 +148,17 @@ describe('Message',()=>{
         });
 
         it('it should UPDATE a message',(done)=>{
-            let data = {            
+            let data = {         
                 contents:"hola amigo Alvaro",
-                lang:"es"
+                lang:"es",
+                to:"User 2"
             };
 
+            data.contents = "hello my friend!";
+
             chai.request(server)
-                .put('/api/messages/'+56)
+                .put('/api/messages/'+4)
+                .set('Authorization',token)
                 .send(data)
                 .end((err,res)=>{
                     res.should.have.status(200);
@@ -122,6 +167,7 @@ describe('Message',()=>{
                     res.body.should.have.property('lang');
                     res.body.should.have.property('to');
                     res.body.should.have.property('from');
+
                     done();
                 });
         });
@@ -131,9 +177,25 @@ describe('Message',()=>{
 
             chai.request(server)
                 .delete('/api/messages/'+58)
+                .set('Authorization',token)
                 .end((err,res)=>{
                     res.should.have.status(200);
                     
+                    done();
+                });
+        })
+
+        it('it should fetch all messages of a determinated language',(done)=>{
+            
+            let lang = "en";
+            chai.request(server)
+                .get('/api/messages/'+lang)
+                .set('Authorization',token)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.be.an('object');
+                    res.body.should.have.property('count');
+                    res.body.should.have.property('objects');
                     done();
                 });
         })

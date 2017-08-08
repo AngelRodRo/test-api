@@ -9,22 +9,34 @@ let http = require('http'),
 
 mongoose.Promise = global.Promise;
 
+process.env.limit = process.env.limit||5;
+
+//Connect to mongodb
 if(mongoose.connection.readyState!=1){
-    mongoose.connect('mongodb://localhost/testmetro',()=>{
-        console.log('Esta conectado')
+    mongoose.connect(config.dbquery,()=>{
+        console.log('Its connected! ')
     });
 }
 
 
-
+// Init routes from API
 router.use("/api",index);
 
+// Create a new server and configure
 let sv = http.createServer((req,res)=>{
 
     let pathname = url.parse(req.url).pathname;
+
+    //Init params from requests
     req.body = "";
     req.params = "";
     req.query = "";
+    
+    // Initializing CORS headers
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    res.setHeader('Access-Control-Allow-Credentials', true)
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     // Extends function from response object for return a json object
     res.json  = function(data){
@@ -32,6 +44,7 @@ let sv = http.createServer((req,res)=>{
         this.end(JSON.stringify(data));
     }
 
+    //Extends function from response object for return a status
     res.status = function(code){
         this.writeHead(code,{ })
         return this;
@@ -40,7 +53,7 @@ let sv = http.createServer((req,res)=>{
     res.send = function(arg) {
 
         if(arg instanceof Number){
-            let rCode  = code || 200;
+            let rCode  = arg || 200;
             this.writeHead(rCode,{ })
             this.end();
             return this;
@@ -49,7 +62,8 @@ let sv = http.createServer((req,res)=>{
         this.end(JSON.stringify(arg));
         return this;
     }
-        
+
+    //Check if the request is POST or PUT for read data stream and convert it an object
     if(req.method === "POST" || req.method == "PUT"){
         // Return data from body of POST request
         let body = "";
@@ -63,6 +77,7 @@ let sv = http.createServer((req,res)=>{
         });
         return;
     }else{
+        // Get query data from url and set in the request object
         req.query = url.parse(req.url,true).query;
         router.check(pathname,req,res);    
     }

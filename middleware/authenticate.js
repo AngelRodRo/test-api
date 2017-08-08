@@ -7,7 +7,6 @@ module.exports = {
         
         jwt.verify(token,config.secret, function(err,decoded) {
 			if(err){
-                console.log('Entroassasaasas aqui');
                 next(true);
                 return res.status(401).send();
             } 

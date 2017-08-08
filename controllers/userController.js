@@ -3,20 +3,11 @@ var jwt = require('jsonwebtoken');
 var config = require('../config/config.json')
 module.exports = {
 
-    /**
-     * 
-     */
-
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     */
-
+    
     create(req,res){
 
-        let { name, email, password } = req.body;
-        let error = {}
+        let { name, email, password } = req.body,
+            error = {}
 
         
         if(!name) {
@@ -42,15 +33,11 @@ module.exports = {
             password: password
         }).then((user)=>{   
 
-            let _user = {
-                name : user.name,
-                email: user.email,
-            };
+            let _user = { name, email  };
             _user.token = jwt.sign(user, config.secret);
             return res.json(_user);
 
         }).catch((err)=>{
-            let error = {}
             error.message = "Ocurred an error check the details for more information";
             error.details = err.toString();
             return res.status(503).send(error);
@@ -61,15 +48,19 @@ module.exports = {
     login(req,res){
 
         let email = req.body.email,
-            password = req.body.password;
+            password = req.body.password,
+            error = {};
+
+        if(!email||!password) {
+            error.message = "Ocurred an error, your credentials are incorrected";
+            return res.status(503).send(error);
+        }
         
-        let error = {}
         User.login(email,password)
             .then((user)=>{
                 if(user.res){
-                delete user.res;
+                    delete user.res;
                     user.token = jwt.sign(user, config.secret);
-                    console.log(user);
                     return res.json(user);
                 }
                 error.message = "Your credentials aren't correct";

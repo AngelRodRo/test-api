@@ -18,7 +18,7 @@ userSchema.pre('save', function(next) {
     Counter.findByIdAndUpdate({_id: 'userId'}, {$inc: { seq: 1} }, function(error, counter)   {
         if(error)
             return next(error);
-        doc.id = counter.seq;
+        if(counter)  doc.id = counter.seq;
         doc.password = hash;
         next();
     });

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha tests/",
     "apidoc": "apidoc -i routes/ -o apidoc/",
-    "start": ""
+    "start": "node .",
+    "seed": "node ./db/seeders/"
   },
   "apidoc": {
     "title": "MetroDigi Test",
