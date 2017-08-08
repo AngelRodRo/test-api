@@ -87,9 +87,7 @@ npm run test
 ## References
 
 - More details about it, check this: https://angelrodro.github.io./
-
 - Test my api: https://test-metro.herokuapp.com/api/
-
 - Check my github: https://github.com/AngelRodRo/test-api
 
 Thanks you! =)
