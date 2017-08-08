@@ -9,75 +9,71 @@ let router = (function(){
 
     //Functions for recognize http methods
     let methods = {
-        get (name,...args) {
+        get (pathname,...args) {
             
             let cb,md;
+            let route = {};
+            let method = "GET";
             if(args.length==2){
                 cb = args[1];
                 md = args[0];
-                mRoutes.push(md);
             }else{
                 cb = args[0];
             }
-            let route = {
-                pathname:name,
-                method:"GET",
-                cb:cb
-            };
+            route = {pathname,method,cb}
+            if(md) route.md = md;
+
             mRoutes.push(route)
         },
 
-        post(name,...args) {
+        post(pathname,...args) {
             let cb,md;
+            let route = {}
+            let method = "POST"
             if(args.length==2){
                 cb = args[1];
                 md = args[0];
-                mRoutes.push(md)
             }else{
                 cb = args[0];
             }
-            let route = {
-                pathname:name,
-                method:"POST",
-                cb:cb
-            };
+            route = {pathname,method,cb}
+            if(md) route.md = md;
+
             mRoutes.push(route)
         },
         
-        put (name,...args) {
+        put (pathname,...args) {
 
             let cb,md;
+            let route = {}
+            let method = "PUT"
             if(args.length==2){
                 cb = args[1];
                 md = args[0];
-                mRoutes.push(md)
             }else{
                 cb = args[0];
             }
 
-            let route = {
-                pathname:name,
-                method:"PUT",
-                cb:cb
-            };
+            route = {pathname,method,cb}
+            if(md) route.md = md;
+
             mRoutes.push(route);
         },
 
-        delete(name,...args){
+        delete(pathname,...args){
             let cb,md;
+            let route = {}
+            let method = "DELETE"
+
             if(args.length==2){
                 cb = args[1];
                 md = args[0];
-                mRoutes.push(md)
             }else{
                 cb = args[0];
             }
 
-            let route = {
-                pathname:name,
-                method:"DELETE",
-                cb:cb
-            };
+            route = {pathname,method,cb}
+            if(md) route.md = md;
             mRoutes.push(route)
         }
     }
@@ -129,36 +125,57 @@ let router = (function(){
 		else{
             let flag = false,i = 0;
             if(mRoutes.length){
-                promiseWhile(function() {
-                // Condition for stopping
+             promiseWhile(function() {
                 return flag;
-            }, function() {
+             }, function() {
                 return new Promise(function(resolve, reject) {
-                    
                     if(!(mRoutes[i] instanceof Function)){
-                        
-                        if(verifyPath(mRoutes[i],pathname, req) ){	
-                            
-                            if(mRoutes[i].method == req.method ){
 
-                                mRoutes[i].cb(req,res);
-                                flag = true;
+                        if(verifyPath(mRoutes[i],pathname, req) ){	
+                            if(mRoutes[i].method === req.method ){
+                                let index = i;
+                                
+                                if(mRoutes[index].md){
+                                    
+                                    mRoutes[index].md(req,res,function( sent = false){
+                                        if(!sent){
+                                            mRoutes[index].cb(req,res);
+                                            flag = true;
+                                        }
+                                        resolve();
+                                    });
+                                }else{
+                                    mRoutes[index].cb(req,res);
+                                    
+                                    flag = true;
+                                    resolve();
+                                }
+                            }else{
+
                                 resolve();
                             }
+                        }else{         
+                            resolve();
                         }
                         
                     }else{
-                        mRoutes[i](req,res,function(sent = false){
+                        mRoutes[i].md(req,res,function(sent = false){
                             flag = sent;
 
                             resolve();
                         })
                     }
+
+                
                     i++;
+
+                    if(i==mRoutes.length){
+                        flag = true;
+                        resolve();                        
+                    }
                 
                 });
                 }).then(function() {
-
                     if(i==mRoutes.length-1){
                         res.writeHead(404,{})
                         res.end("Not found");
@@ -175,7 +192,7 @@ let router = (function(){
     }
     
     let verifyPath = function(route, pathname, req){
-        
+
         let fr = route.pathname.split("/");
         let ds = pathname.split("/");
         let params = {}

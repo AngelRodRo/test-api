@@ -30,26 +30,20 @@ userSchema.pre('save', function(next) {
 userSchema.statics.login = function(email,password){
     var promise = this.findOne({email:email}).exec();
 
-    promise.then((user)=>{
+    return promise.then((user)=>{
         var error = {},
             body = {};
 
-        if(err){
-            throw err;
-        } 
         if(!user){
-            throw {err,user}
+            throw user;
         } 	
 
+
+
         return bcrypt.compare(password, user.password).then((res)=>{
-            let data = {}
-            data.user = user;
-            if(res){
-                data.verified = true;
-                return data;
-            }
-            data.verified = false
-            return data ;
+            let _user = user._doc;
+            _user.res = res;            
+            return Promise.resolve(_user) ;
         });
     })
 

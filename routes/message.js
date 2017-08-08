@@ -1,14 +1,202 @@
 var router = require('../router.js')();
 var messageController = require('../controllers/messageController');
-
+var middleware = require('../middleware/authenticate');
 
 /**
- * @api {post} /create Create a new user
- * @apiName CreateUser
+ * @api {post} /messages/ Create a new message
+ * @apiName CreateMessage
  * 
- * @apiGroup User
- * @apiParam {String} email Email 
- * @apiParam {String} password Password 
+ * @apiHeader {String} Authorization Authorization token
+ * 
+ * @apiGroup Message
+ * @apiParam {String} to To 
+ * @apiParam {String} contents Contents 
+ * @apiParam {String} lang Lang 
+ *
+ * @apiSuccess (200) {String} to To
+ * @apiSuccess (200) {String} from From
+ * @apiSuccess (200) {String} contents Contents
+ * @apiSuccess (200) {String} lang Lang
+
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "from" : "User 1",
+ *    "to":"User 2",
+ *    "contents":"hello world!",
+ *    "lang":"en"
+ *  }
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 503 Service Unavailable
+ *  {
+ *    "error": "error",
+ *    "details":"details"
+ *  }
+ */
+
+
+router.post('/', middleware.authenticate, messageController.create);
+
+/**
+ * @api {delete} /messages/:id Delete a message
+ * @apiName DeleteMessage
+ * 
+ * @apiHeader {String} Authorization Authorization token
+ * 
+ * @apiGroup Message
+ * @apiParam {Number} id Id 
+ *
+
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *  }
+ */
+
+
+router.delete('/:id',middleware.authenticate, messageController.delete);
+
+/**
+ * @api {put} /messages/:id Update a message of user
+ * @apiName UpdateMessage
+ * 
+ * @apiHeader {String} Authorization Authorization token
+ * 
+ * @apiGroup Message
+ * 
+ * @apiParam {Number} id Number 
+ * @apiParam {String} contents Contents 
+ * @apiParam {String} lang Language 
+ *
+ * @apiSuccess (200) {String} contents Contents
+ * @apiSuccess (200) {String} lang Language
+ * @apiSuccess (200) {String} to To
+ * @apiSuccess (200) {String} from From
+
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "contents":"Hello world!",
+ *    "to":"User 1",
+ *    "from":"User 2",
+ *    "lang":"es",
+ *    "open":true
+ *  }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 503 Service Unavailable
+ *  {
+ *    "error": "error",
+ *    "details":"details"
+ *  }
+ */
+
+router.put('/:id', middleware.authenticate, messageController.update);
+
+/**
+ * @api {get} /messages/receive Get all receive messages of user
+ * @apiName GetAllReceiveMessages
+ * 
+ * @apiHeader {String} Authorization Authorization token
+ * 
+ * @apiGroup Message
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [
+ *    {
+ *      "contents":"Hello world!",
+ *      "to":"User 1",
+ *      "from":"User 2",
+ *      "lang":"es",
+ *      "open":true
+ *    },
+ *    {
+ *      "contents":"Hello world!",
+ *      "to":"User 2",
+ *      "from":"User 1",
+ *      "lang":"es",
+ *      "open":true
+ *    }
+ *  ]
+ */
+
+router.get('/receive', middleware.authenticate, messageController.receive);
+
+/**
+ * @api {get} /messages/sent Get all sent messages of user
+ * @apiName GetAllSentMessages
+ * 
+ * @apiGroup Message
+ * 
+ * @apiHeader {String} Authorization Authorization token
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [
+ *    {
+ *      "contents":"Hello world!",
+ *      "to":"User 1",
+ *      "from":"User 2",
+ *      "lang":"es",
+ *      "open":true
+ *    },
+ *    {
+ *      "contents":"Hello world!",
+ *      "to":"User 2",
+ *      "from":"User 1",
+ *      "lang":"es",
+ *      "open":true
+ *    }
+ *  ]
+ */
+
+
+router.get('/sent', middleware.authenticate, messageController.sent);
+
+/**
+ * @api {get} /messages/:lang Get all messages per language
+ * @apiName GetAllMessagesPerLan
+ * 
+ * @apiGroup Message
+ * 
+ * @apiParam {String} lang Language 
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [
+ *    {
+ *      "contents":"Hello world!",
+ *      "to":"User 1",
+ *      "from":"User 2",
+ *      "lang":"es",
+ *      "open":true
+ *    },
+ *    {
+ *      "contents":"Hello world!",
+ *      "to":"User 2",
+ *      "from":"User 1",
+ *      "lang":"es",
+ *      "open":true
+ *    }
+ *  ]
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 503 Service Unavailable
+ *  {
+ *    "error": "error",
+ *    "details":"details"
+ *  }
+ */
+router.get('/:lang',messageController.getMessagesForLanguage);
+
+/**
+ * @api {get} /messages/:id/translate/:lang Translate a message for id
+ * @apiName TranslateMessage
+ * 
+ * @apiGroup Message
+ * @apiParam {Number} id Id 
+ * @apiParam {String} lang Language 
  *
  * @apiSuccess (200) {String} name Name
  * @apiSuccess (200) {String} email Email
@@ -17,19 +205,17 @@ var messageController = require('../controllers/messageController');
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  {
- *    "name":"Angel",
- *    "email":"angel@gmail.com",
- *    "token":"token"
+ *    "message":{
+ *      "contents":"Hello world!",
+ *      "to":"User 2",
+ *      "from":"User 1",
+ *      "lang":"es",
+ *      "open":true
+ *    },
+ *    "translate":"Hola Mundo"
  *  }
  */
 
-
-router.post('/',messageController.create);
-router.delete('/:id',messageController.delete);
-router.put('/:id',messageController.update);
-router.get('/receive',messageController.receive);
-router.get('/sent',messageController.sent);
-router.get('/:lang',messageController.getMessagesForLanguage);
 router.get('/:id/translate/:lang',messageController.translate);
 
 module.exports = router;

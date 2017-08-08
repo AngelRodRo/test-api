@@ -78,7 +78,7 @@ messageSchema.statics.receiveMessages = function(id){
     let promise = User.findOne({id:id}).exec();
     return promise.then((user)=>{
         if(!user) throw 'No exist an user with this Id';
-        this.find({to:user.name}).exec()
+        return this.find({to:user.name}).exec()
     });
 }
 
@@ -86,9 +86,10 @@ messageSchema.statics.receiveMessages = function(id){
 messageSchema.statics.sentMessages = function(id){
 
     let promise = User.findOne({id:id}).exec();
+    let model = this;
     return promise.then((user)=>{
         if(!user) throw 'No exist an user with this Id';
-        this.find({from:user.name}).exec()
+        return this.find({from:user.name}).exec()
     });
 }
 

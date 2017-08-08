@@ -8,7 +8,9 @@ module.exports = {
 
     create(req,res){
 
-        var userId = req.body.userId || req.headers.id ||  req.headers.user.id;
+
+
+        var userId = req.headers.user.id;
         let {name, contents,lang,to} = req.body;
         let error = {}
 
@@ -42,11 +44,10 @@ module.exports = {
             return res.status(503).send(error);
         });
 
-
     },
 
     update(req,res){
-        let userId = "598896a4e89d4546a158fa65";
+        let userId = req.headers.user.id;
         let id = req.params.id;
         let {contents,lang} = req.body;
 
@@ -94,7 +95,7 @@ module.exports = {
             })
     },
     receive(req,res){
-        var userId = req.body.userId || req.headers.id ||  req.query.userId;
+        var userId = req.headers.user.id;
         let error = {}
         Message.receiveMessages(userId)
             .then((messages)=>{
@@ -159,10 +160,12 @@ module.exports = {
     
 
     sent(req,res){
-        var userId = req.body.userId || req.headers.id || req.query.userId;
+        let userId = req.headers.user.id;
         let error = {}
+        console.log(userId)
         Message.sentMessages(userId)
             .then((messages)=>{
+                console.log(messages)
                 if(!messages){
                     error.message = "You don't have sent messages !";
                     return res.status(503).send(error)

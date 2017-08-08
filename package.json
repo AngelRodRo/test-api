@@ -5,8 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/",
-    "apidoc": "",
+    "apidoc": "apidoc -i routes/ -o apidoc/",
     "start": ""
+  },
+  "apidoc": {
+    "title": "MetroDigi Test",
+    "url": "https://api.github.com/api"
   },
   "author": "",
   "license": "ISC",
