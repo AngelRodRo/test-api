@@ -4,7 +4,7 @@
   "description": "Test Metrodigi API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests/",
+    "test": "node ./db/seeders/ && mocha tests/",
     "apidoc": "apidoc -i routes/ -o apidoc/",
     "start": "node .",
     "seed": "node ./db/seeders/"

@@ -87,10 +87,16 @@ npm run test
 
         For more details visited: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
+## Considerations
+
+- Was extended data model of User for authentication. Added email and password.
+- 
+
 ## References
 
-- More details about it, check this: https://angelrodro.github.io./
-- Test my api: https://test-metro.herokuapp.com/api/
+- More details about it, in the documentation: https://angelrodro.github.io./. Please notice that here there more details about headers, samples and another params. 
+Credits to: http://apidocjs.com/
+- Test the api: https://test-metro.herokuapp.com/api/
 - Check my github: https://github.com/AngelRodRo/test-api
 
 Thank you! =)

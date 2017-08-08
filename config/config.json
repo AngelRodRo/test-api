@@ -3,5 +3,6 @@
     "host":"localhost",
     "secret":"ilikejsjslikememuchwellalsoilikeandroidandanotherstechnologiesoftheweb",
     "yandexAPIKEY" : "trnsl.1.1.20170807T142101Z.23edeaa049512896.192d4ffe84382d988714dfbfb8a5dcb816b09d47",
-    "dbquery" :"mongodb://dbmaster:dbmaster@ds111262.mlab.com:11262/metro-test"
+    "dbquery" :"mongodb://localhost:27017/testmetro"
+
 }

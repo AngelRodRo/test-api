@@ -14,18 +14,18 @@ module.exports = {
             if(!contents) {
                 error.message = "Ocurred an error while creating, you need put the content before continue";
                 error.code = "41001";
-                return res.status(503).send(error);
+                return res.json(error,503);
             }
             if(!lang) {
                 error.message = "Ocurred an error while registering, you need put the lang before continue";
                 error.code = "41002";
-                return res.status(503).send(error);
+                return res.json(error,503);
             }
 
             if(!to){
                 error.message = "Ocurred an error while registering, you need put the destinatary before continue";
                 error.code = "41003";
-                return res.status(503).send(error);
+                return res.json(error,503);
             }
 
             Message.createMessageFromUser(userId,{
@@ -37,7 +37,7 @@ module.exports = {
             }).catch((err)=>{
                 error.message = "Check the details for more information";
                 error.details = err.toString();
-                return res.status(503).send(error);
+                return res.json(error,503);
             });
 
 
@@ -71,7 +71,7 @@ module.exports = {
             }).catch((err)=>{
                 error.message = "Check the details for more information";
                 error.details = err.toString();
-                return res.status(503).send(error);
+                return res.json(error,503);
             })
     },
 
@@ -84,7 +84,7 @@ module.exports = {
         }).catch((err)=>{
             error.message = "Check details for more information";
             error.details = err.toString();
-            return res.status(503).send(err);            
+            return res.json(error,503);
         })
     },
 
@@ -96,7 +96,7 @@ module.exports = {
         }).catch((err)=>{
             error.message = "Check details for more information";
             error.details = err.toString();
-            return res.status(503).send(err);
+            return res.json(error,503);
         })
     },
 
@@ -113,7 +113,7 @@ module.exports = {
                 let error = {};
                 error.message = "Check the details for more information";
                 error.details = err;
-                return res.status(503).send(error);
+                return res.json(error,503);
             })
     },
     receive(req,res){
@@ -125,13 +125,13 @@ module.exports = {
             .then((messages)=>{
                 if(!messages){
                     error.message = "You don't have receive messages !";
-                    return res.status(503).send(error)
+                    return res.json(error,503);
                 }
                 return res.json(messages);
             }).catch((err)=>{
                 error.message = "Ocurred an error, check the details for more information";
                 error.details = err.toString();
-                return res.status(503).send(error)
+                return res.json(error,503);
 
             })
     },
@@ -148,7 +148,7 @@ module.exports = {
             .catch((err)=>{
                 error.message = "Ocurred an error, check the details for more information";
                 error.details = err.message;
-                return res.status(503).send(error);
+                return res.json(error,503);
             })
     },
 
@@ -167,7 +167,7 @@ module.exports = {
             .catch((error)=>{
                 error.message = "Ocurred an error, check the details for more information";
                 error.details = err.toString();
-                return res.status(503).send(error);
+                return res.json(error,503);
             })
     },
     
@@ -181,14 +181,13 @@ module.exports = {
             .then((messages)=>{
                 if(!messages){
                     error.message = "You don't have sent messages !";
-                    return res.status(503).send(error)
+                    return res.json(error,503);
                 }
                 return res.json(messages);
             }).catch((err)=>{
                 error.message = "Ocurred an error, check the details for more information";
                 error.details = err.toString();
-                return res.status(503).send(error)
-
+                return res.json(error,503);
             })
     }
 

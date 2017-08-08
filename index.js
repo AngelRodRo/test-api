@@ -39,13 +39,15 @@ let sv = http.createServer((req,res)=>{
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     // Extends function from response object for return a json object
-    res.json  = function(data){
-        this.writeHead(200,{ 'Content-Type': 'application/json'});
+    res.json  = function(data,code){
+        this.writeHead(code||200,{ 'Content-Type': 'application/json'});
         this.end(JSON.stringify(data));
     }
 
+    
     //Extends function from response object for return a status
     res.status = function(code){
+        this.code = code;
         this.writeHead(code,{ })
         return this;
     }

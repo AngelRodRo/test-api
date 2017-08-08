@@ -91,6 +91,43 @@ describe('User module',()=>{
                 });
         });
 
+        describe("Validations",()=>{
+            it('it should not CREATE a new user when sent a request without name or email',(done)=>{
+        
+                let user = {
+                    name:'user',
+                    password: '123456'
+                };
+
+                chai.request(server)
+                    .post('/api/users/')
+                    .send(user)
+                    .end((err,res)=>{
+                        res.should.have.status(503);
+                        res.should.be.a('object');
+                        res.body.should.have.property('message');
+                        done();
+                    });
+            });
+
+            it('it should not LOGIN a user when sent a request without name or email',(done)=>{
+        
+                let user = {
+                    name:'user',
+                    password: '123456'
+                };
+
+                chai.request(server)
+                    .post('/api/users/login')
+                    .send(user)
+                    .end((err,res)=>{
+                        res.should.have.status(503);
+                        res.should.be.a('object');
+                        res.body.should.have.property('message');
+                        done();
+                    });
+            });
+        })
 
     })
     

@@ -112,7 +112,7 @@ describe('Message',()=>{
 
         
 
-        beforeEach((done)=>{
+        before((done)=>{
             
             let data = {
                 name:'Angel',
@@ -130,7 +130,81 @@ describe('Message',()=>{
                             done();
                         });
                 })
+        });
+
+        describe('Unauthorized requests ',()=>{
+            it('it should not CREATE a new message', (done)=>{
+                let data = {            
+                    to:"Alvaro",
+                    contents:"hello world",
+                    lang:"es",
+                    open:true
+                };
+
+                chai.request(server)
+                    .post('/api/messages/')
+                    .set('Authorization',"12")
+                    .send(data)
+                    .end((err,res)=>{
+                        messageId = res.body.id;
+                        res.should.have.status(401);
+                        done();
+                    });
+            });
+
+            it('it should not UPDATE a message',(done)=>{
+                let data = {         
+                    contents:"Hello World!",
+                    lang:"en"
+                };
+
+
+                chai.request(server)
+                .put('/api/messages/'+1)
+                .set('Authorization',"dummyToken")
+                .send(data)
+                .end((err,res)=>{
+                    res.should.have.status(401);
+                    done();
+                });
+            });
+
+            it('it should not DELETE a message',(done)=>{
+            
+                chai.request(server)
+                .delete('/api/messages/1')
+                .set('Authorization',"dummyToken")
+                .end((err,res)=>{
+                    res.should.have.status(401);
+                    
+                    done();
+                });
+            })
+
+            it('it should not get all sent messages from user',(done)=>{
+        
+                chai.request(server)
+                .get('/api/messages/sent')
+                .set('Authorization',"dummyToken")
+                .end((err,res)=>{
+                    res.should.have.status(401);
+                    done();
+                });
+            })
+
+            it('it should not get all receive messages from user',(done)=>{
+        
+                chai.request(server)
+                .get('/api/messages/receive')
+                .set('Authorization',"dummyToken")
+                .end((err,res)=>{
+                    res.should.have.status(401);
+                    done();
+                });
+            })
         })
+
+        
 
         it('it should CREATE a new message with user id',(done)=>{
             let data = {            
@@ -156,6 +230,8 @@ describe('Message',()=>{
                     done();
                 });
         });
+
+        
 
         it('it should UPDATE a message',(done)=>{
             let data = {         
@@ -207,6 +283,42 @@ describe('Message',()=>{
                     done();
                 });
         });
+
+
+        it('it should get all sent messages from user',(done)=>{
+        
+            chai.request(server)
+                .get('/api/messages/sent')
+                .set('Authorization',token)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.be.an('array');
+
+                    done();
+                });
+        })
+
+        it('it should get all receive messages from user',(done)=>{
+            
+            Message.create({
+                "to":"Angel",
+                "from":"Alvaro",
+                "contents":"Hey! How are u",
+                "lang":"en"
+            }).then(()=>{
+                chai.request(server)
+                    .get('/api/messages/receive')
+                    .set('Authorization',token)
+                    .end((err,res)=>{
+                        res.should.have.status(200);
+                        res.body.should.be.an('array');
+
+                        done();
+                    });
+            })
+
+            
+        })
 
         it('it should DELETE a message',(done)=>{
             

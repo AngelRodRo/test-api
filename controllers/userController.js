@@ -13,18 +13,18 @@ module.exports = {
         if(!name) {
             error.message = "Ocurred an error while registering, you need put an name before continue";
             error.code = "41000";
-            return res.status(503).send(error);
+            return res.json(error,503);
         }
         if(!email) {
             error.message = "Ocurred an error while registering, you need put an email before continue";
             error.code = "41000";
-            return res.status(503).send(error);
+            return res.json(error,503);
         }
 
         if(!password){
             error.message = "Ocurred an error while registering, you need put an password before continue";
             error.code = "41000";
-            return res.status(503).send(error);
+            return res.json(error,503);
         }
 
         User.create({
@@ -40,7 +40,7 @@ module.exports = {
         }).catch((err)=>{
             error.message = "Ocurred an error check the details for more information";
             error.details = err.toString();
-            return res.status(503).send(error);
+            return res.json(error,503);
         })
 
     },
@@ -53,7 +53,7 @@ module.exports = {
 
         if(!email||!password) {
             error.message = "Ocurred an error, your credentials are incorrected";
-            return res.status(503).send(error);
+            return res.json(error,503);
         }
         
         User.login(email,password)
@@ -64,12 +64,12 @@ module.exports = {
                     return res.json(user);
                 }
                 error.message = "Your credentials aren't correct";
-                return res.status(503).send(error);
+                return res.json(error,503);
 
             }).catch((err)=>{
                 error.message = "Ocurred an error, check details for more information";
                 error.details = err.toString();
-                return res.status(503).send(error);
+                return res.json(error,503);
             })
 
     }

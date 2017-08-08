@@ -35,6 +35,13 @@ router.get('/:id/one',messageController.getOne);
  *    "error": "error",
  *    "details":"details"
  *  }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ *  {
+ *    "error": "error",
+ *    "details":"details"
+ *  }
  */
 
 
@@ -52,6 +59,11 @@ router.post('/', middleware.authenticate, messageController.create);
 
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
+ *  {
+ *  }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 401 Unauthorized
  *  {
  *  }
  */
@@ -92,6 +104,11 @@ router.delete('/:id',middleware.authenticate, messageController.delete);
  *    "error": "error",
  *    "details":"details"
  *  }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ *  {
+ *  }
  */
 
 router.put('/:id', middleware.authenticate, messageController.update);
@@ -122,6 +139,11 @@ router.put('/:id', middleware.authenticate, messageController.update);
  *      "open":true
  *    }
  *  ]
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ *  {
+ *  }
  */
 
 router.get('/receive', middleware.authenticate, messageController.receive);
@@ -152,6 +174,10 @@ router.get('/receive', middleware.authenticate, messageController.receive);
  *      "open":true
  *    }
  *  ]
+ * @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ *  {
+ *  }
  */
 
 
@@ -187,8 +213,6 @@ router.get('/sent', middleware.authenticate, messageController.sent);
  * @apiErrorExample {json} Error-Response:
  *  HTTP/1.1 503 Service Unavailable
  *  {
- *    "error": "error",
- *    "details":"details"
  *  }
  */
 router.get('/:lang',messageController.getMessagesForLanguage);

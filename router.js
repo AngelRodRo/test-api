@@ -188,15 +188,19 @@ let router = (function(){
                 }).then(function() {
                     
                     if(i==mRoutes.length){
-                        res.writeHead(404,{})
-                        res.end("Not found");
-                        return;
+                        if(!res.headersSent){
+                            res.writeHead(404,{})
+                            res.end("Not found");
+                            return;
+                        }
                     }
                 });
             }else{
-                res.writeHead(404,{})
-                        res.end("Not found");
-                        return;
+                if(!res.headersSent){
+                    res.writeHead(404,{})
+                    res.end("Not found");
+                    return;
+                }
             }
 			
 		}
