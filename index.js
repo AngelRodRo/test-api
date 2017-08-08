@@ -85,7 +85,7 @@ let sv = http.createServer((req,res)=>{
 })
 
 let port = process.env.PORT || config.port
-sv.listen(port,config.host, ()=>{
+sv.listen(5000, ()=>{
     console.log('Server started!')
 })
 
