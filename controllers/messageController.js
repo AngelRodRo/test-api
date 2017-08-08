@@ -33,7 +33,6 @@ module.exports = {
                 lang:lang,
                 to:to
             }).then((message)=>{
-                
                 return res.json(message);
             }).catch((err)=>{
                 error.message = "Check the details for more information";
@@ -142,7 +141,6 @@ module.exports = {
         let tLang = req.params.lang,
             messageId = req.params.id,
             error = {}
-        console.log('adssa')
         Message.translateMessage(messageId,tLang)
             .then((response)=>{
                 return res.status(200).send(response);
@@ -155,7 +153,6 @@ module.exports = {
     },
 
     getMessagesForLanguage(req,res){
-        console.log('entro aqui')
         let lang = req.params.lang,
             error = {};
 

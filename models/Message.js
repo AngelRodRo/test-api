@@ -32,19 +32,19 @@ messageSchema.pre('save', function(next) {
         createdAt: { $gte: start, $lte: end },
         from: this.from
     },(err,count)=>{
-        if(count<=process.env.limit) next();
+        if(count<=process.env.limit) return next();
         let error = new Error('Limit of messages exceed, wait an hour please');
         next(error);
     })
 });
 
 // Pre hook for create a autoincrement id for this model
-messageSchema.pre('save', (next)=> {
+messageSchema.pre('save', function(next){
     let doc = this;
     Counter.findByIdAndUpdate({_id: 'messageId'}, {$inc: { seq: 1} }, function(error, counter)   {
         if(error)
             return next(error);
-        if(counter)   doc.id = counter.seq;
+        if(counter) doc.id = counter.seq;
         next();
     });
 });
@@ -127,7 +127,6 @@ messageSchema.statics.translateMessage = function(id,tLang){
 }
 
 messageSchema.statics.getMessagesForLanguage = function(lang){
-    console.log('dasdas')
     let promise = this.find({lang:lang}).exec();
     return promise;
 }

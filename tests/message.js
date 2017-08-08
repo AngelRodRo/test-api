@@ -12,10 +12,10 @@ let Message = require('../models/Message');
 let server = require('../index.js');
 let User = require('../models/User');
 let config = require('../config/config');
-
+let seed = require('../db/seeders/index');
 describe('Message',()=>{
 
-    beforeEach(function(done){
+    before(function(done){
         mongoose.Promise = global.Promise;
         if(mongoose.connection.readyState!=1){
             mongoose.connect(config.dbquery, { useMongoClient: true } ,()=>{
@@ -25,9 +25,6 @@ describe('Message',()=>{
             done()
         }
     })
-
-
-
 
     describe('Init functions',()=>{
 
@@ -64,7 +61,7 @@ describe('Message',()=>{
                 open:true
             };
 
-            return Message.createMessageFromUser(1,data).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','to','from','open', 'contents','lang','createdAt');
+            return Message.createMessageFromUser(1,data).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','to','from','open','id', 'contents','lang','createdAt');
 
         });
 
@@ -111,6 +108,9 @@ describe('Message',()=>{
     describe('API REQUEST',()=>{
 
         let token = "";
+        let messageId = "";
+
+        
 
         beforeEach((done)=>{
             
@@ -130,8 +130,6 @@ describe('Message',()=>{
                             done();
                         });
                 })
-
-            
         })
 
         it('it should CREATE a new message with user id',(done)=>{
@@ -147,27 +145,27 @@ describe('Message',()=>{
                 .set('Authorization',token)
                 .send(data)
                 .end((err,res)=>{
+                    messageId = res.body.id;
                     res.should.have.status(200);
                     res.should.be.a('object');
                     res.body.should.have.property('contents');
                     res.body.should.have.property('lang');
                     res.body.should.have.property('to');
                     res.body.should.have.property('from');
+
                     done();
                 });
         });
 
         it('it should UPDATE a message',(done)=>{
             let data = {         
-                contents:"hola amigo Alvaro",
-                lang:"es",
-                to:"User 2"
+                contents:"Hello World!",
+                lang:"en"
             };
 
-            data.contents = "hello my friend!";
 
             chai.request(server)
-                .put('/api/messages/'+4)
+                .put('/api/messages/'+messageId)
                 .set('Authorization',token)
                 .send(data)
                 .end((err,res)=>{
@@ -197,7 +195,7 @@ describe('Message',()=>{
         it('it should return a message for id',(done)=>{
 
             chai.request(server)
-                .get('/api/messages/'+1+'/one')
+                .get('/api/messages/'+messageId+'/one')
                 .set('Authorization',token)
                 .end((err,res)=>{
                     res.should.have.status(200);

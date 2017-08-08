@@ -10,11 +10,22 @@ chai.use(chaiHttp);
 let should = chai.should();
 let User = require('../models/User');
 let server = require('../index.js');
-
+let mongoose = require('mongoose');
+let config = require('../config/config');
 
 describe('User module',()=>{
 
-    
+    before(function(done){
+        mongoose.Promise = global.Promise;
+        if(mongoose.connection.readyState!=1){
+            mongoose.connect(config.dbquery, { useMongoClient: true } ,()=>{
+                done()
+            });
+        }else{
+            done()
+        }
+    })
+
 
     describe('Init functions' , ()=>{
         it('it should be a function', (done) =>{
@@ -33,7 +44,7 @@ describe('User module',()=>{
                 email:"user1@gmail.com",
                 password:"123456"
             };
-            return User.create(data).then((user)=> user._doc ).should.eventually.have.all.keys('__v','_id','name','email','password');
+            return User.create(data).then((user)=> user._doc ).should.eventually.have.all.keys('__v','_id','name','email','id','password');
         })
 
     })
@@ -59,7 +70,28 @@ describe('User module',()=>{
                     done();
                 });
         });
-            
+        
+        it('it should login a user',(done)=>{
+        
+            let user = {
+                email: 'user1@gmail.com',
+                password: '123456'
+            };
+
+            chai.request(server)
+                .post('/api/users/login')
+                .send(user)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.should.be.a('object');
+                    res.body.should.have.property('name');
+                    res.body.should.have.property('email');
+                    res.body.should.have.property('token');
+                    done();
+                });
+        });
+
+
     })
     
     

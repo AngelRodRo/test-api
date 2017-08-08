@@ -23,7 +23,10 @@ Describe and show how to run the tests with code examples.
 
 ### Run tests
 
+Before running the tests run the seeds to have the data available for testing
+
 ```
+npm run seed
 npm run test
 ```
 ## API Reference
@@ -90,6 +93,6 @@ npm run test
 - Test my api: https://test-metro.herokuapp.com/api/
 - Check my github: https://github.com/AngelRodRo/test-api
 
-Thanks you! =)
+Thank you! =)
 
 
