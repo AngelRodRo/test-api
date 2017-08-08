@@ -85,7 +85,7 @@ npm test
         For more details visited: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 ## Considerations
-- Do not forget to place the paths correctly, for example "/api/messages/" is not the same as "/api/messages"
+- Do not forget to place the paths correctly, for example "/api/messages/" is not the same as "/api/messages". For reasons of time, it was not valid.
 - Was extended data model of User for authentication. Added email and password.
 
 ## References
