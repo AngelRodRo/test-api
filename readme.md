@@ -90,14 +90,13 @@ npm run test
 ## Considerations
 
 - Was extended data model of User for authentication. Added email and password.
-- 
 
 ## References
 
-- More details about it, in the documentation: https://angelrodro.github.io./. Please notice that here there more details about headers, samples and another params. 
+- More details about the API in the online documentation: https://angelrodro.github.io./. Please notice that here, there more details about headers, samples and another params. 
 Credits to: http://apidocjs.com/
 - Test the api: https://test-metro.herokuapp.com/api/
-- Check my github: https://github.com/AngelRodRo/test-api
+- Check the repo in github: https://github.com/AngelRodRo/test-api
 
 Thank you! =)
 
