@@ -1,7 +1,7 @@
 {
   "name": "test-metrodigi",
   "version": "1.0.0",
-  "description": "Test of Metrodigi Application",
+  "description": "Test Metrodigi API",
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/",

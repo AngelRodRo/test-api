@@ -115,6 +115,7 @@ messageSchema.statics.translateMessage = function(id,tLang){
                 request(url,function(err,response,body){
                     if(err) return reject(err);
                     let data = JSON.parse(body);
+                    if(data.code!==200) return reject(data);
                     let translate = data.text[0];
                     let resp = {message,translate}
                     

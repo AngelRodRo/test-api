@@ -46,12 +46,12 @@ npm run test
     ----------------------------------------------------------------------------------
     |        Route           |            Description            |  Method  |  Auth? | 
     ---------------------------------------------------------------------------------
-    | /api/messages          |  Return all messages              |   GET    |   No   | 
+    | /api/messages/         |  Return all messages              |   GET    |   No   | 
     ---------------------------------------------------------------------------------
-    | /api/messages/:id      |  Get a message from authenticated |   GET    |   Yes  |
+    | /api/messages/:id/one  |  Get a message from authenticated |   GET    |   Yes  |
     |                        |   user                            |          |        |
     ---------------------------------------------------------------------------------
-    | /api/messages          |  Create a new message             |   POST   |  Yes   |
+    | /api/messages/         |  Create a new message             |   POST   |  Yes   |
     ---------------------------------------------------------------------------------
     | /api/messages/sent     |  Return sent messages of          |   GET    |  Yes   |  
     |                        |  authenticated user               |          |        |
@@ -72,13 +72,22 @@ npm run test
     |                        |  language such of user            |          |        |
     ---------------------------------------------------------------------------------
 
+## Examples
+
+    - /api/messages/1/translate/es
+
+        * lang : It's the code of language. 
+            For example: 
+                [en - English, es - Spanish]
+            For more details visited: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
 ## References
 
 More details about it, check this: https://angelrodro.github.io./
 
-Test my api : https://test-metro.herokuapp.com/api/
+Test my api: https://test-metro.herokuapp.com/api/
 
-Check my github : https://github.com/AngelRodRo/test-api
+Check my github: https://github.com/AngelRodRo/test-api
 
 Thanks you! =)
 

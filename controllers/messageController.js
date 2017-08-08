@@ -149,7 +149,7 @@ module.exports = {
             })    
             .catch((err)=>{
                 error.message = "Ocurred an error, check the details for more information";
-                error.details = err.toString();
+                error.details = err.message;
                 return res.status(503).send(error);
             })
     },

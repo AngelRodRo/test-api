@@ -82,8 +82,10 @@ let sv = http.createServer((req,res)=>{
         router.check(pathname,req,res);    
     }
 })
-sv.listen(process.env.PORT || 5000 , ()=>{
-    console.log('Server started!')
+
+let port = process.env.PORT || 5000;
+sv.listen(port , ()=>{
+    console.log(' Running on: http://localhost:' + port )
 })
 
 
