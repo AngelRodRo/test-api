@@ -40,7 +40,9 @@ describe('Message',()=>{
             expect(Message.sentMessages).to.be.a('Function')
             
             expect(Message.translateMessage).to.be.a('Function');
-            expect(Message.listMessagesForLanguage).to.be.a('Function');
+            expect(Message.getMessagesForLanguage).to.be.a('Function');
+            expect(Message.find).to.be.a('Function');
+            expect(Message.findOne).to.be.a('Function');
 
             done();
         })
@@ -57,7 +59,7 @@ describe('Message',()=>{
         it('it should CREATE new message',()=>{
             let data = {            
                 to:"Alvaro",
-                contents:"hola amigo Alvaro",
+                contents:"hey! how are u",
                 lang:"es",
                 open:true
             };
@@ -79,6 +81,14 @@ describe('Message',()=>{
             done();
             //return Message.deleteMessageFromUser(47).then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','id','to','from','open', 'contents','lang');
         });
+
+        it('it should return all messages',()=>{
+            return Message.find().exec().should.eventually.to.be.an('array');
+        });
+
+        it('it should return a message from id',()=>{
+            return Message.findOne({id:1}).exec().then((message)=>message._doc).should.eventually.have.all.keys('__v','_id','id','to','from','open', 'contents','lang','createdAt');
+        })
 
         it('it should return all receive messages from user id ',()=>{
             return Message.receiveMessages(1).then((messages)=>messages).should.eventually.to.be.an('array');
@@ -168,6 +178,34 @@ describe('Message',()=>{
                     res.body.should.have.property('to');
                     res.body.should.have.property('from');
 
+                    done();
+                });
+        });
+
+         it('it should return all messages',(done)=>{
+
+            chai.request(server)
+                .get('/api/messages/')
+                .set('Authorization',token)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.be.an('array');
+                    done();
+                });
+        });
+
+        it('it should return a message for id',(done)=>{
+
+            chai.request(server)
+                .get('/api/messages/'+1+'/one')
+                .set('Authorization',token)
+                .end((err,res)=>{
+                    res.should.have.status(200);
+                    res.body.should.be.an('object');
+                    res.body.should.have.property('contents');
+                    res.body.should.have.property('lang');
+                    res.body.should.have.property('to');
+                    res.body.should.have.property('from');
                     done();
                 });
         });

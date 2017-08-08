@@ -79,7 +79,7 @@ module.exports = {
     getOne(req,res){
         var id = req.params.id;
         let error = {}
-        
+
         Message.findOne({id:id}).exec().then((message)=>{
             return res.json(message)
         }).catch((err)=>{
@@ -104,10 +104,12 @@ module.exports = {
     delete(req,res){
 
         let id = req.params.id;
+        let userId = req.headers.user.id;
 
-        Message.deleteMessageFromUser(id)
+        Message.deleteMessageFromUser(id,userId)
             .then(()=>{
-                return res.status(200).send();
+                let message = "Message deleted successfully!"
+                return res.status(200).send(message);
             }).catch((err)=>{
                 let error = {};
                 error.message = "Check the details for more information";
@@ -140,10 +142,10 @@ module.exports = {
         let tLang = req.params.lang,
             messageId = req.params.id,
             error = {}
-
+        console.log('adssa')
         Message.translateMessage(messageId,tLang)
-            then((response)=>{
-                return res.json(response);
+            .then((response)=>{
+                return res.status(200).send(response);
             })    
             .catch((err)=>{
                 error.message = "Ocurred an error, check the details for more information";
@@ -153,7 +155,7 @@ module.exports = {
     },
 
     getMessagesForLanguage(req,res){
-
+        console.log('entro aqui')
         let lang = req.params.lang,
             error = {};
 

@@ -61,10 +61,6 @@ messageSchema.statics.createMessageFromUser = function(userId,data){
         });
 }
 
-messageSchema.statics.listMySentMessages = function(userId){
-    let promise = this.find({_id:userId}).exec();
-    return promise;
-}
 
 // TODO: Add validation for user if it isn't his message
 messageSchema.statics.updateMessageFromUser = function(userId,id,data){
@@ -78,12 +74,13 @@ messageSchema.statics.updateMessageFromUser = function(userId,id,data){
 
 }
 
-// TODO: Add validation for user if it isn't his message
 messageSchema.statics.deleteMessageFromUser = function(id,userId){
-    let promise = User.findOne({_id:userId}).exec();
+    let promise = User.findOne({id:userId}).exec();
     
     return promise
-            .then((user)=> this.remove({id:id}));
+            .then((user)=>{
+                return this.remove({id:id,from:user.name})
+            });
 
 }
 
@@ -114,13 +111,13 @@ messageSchema.statics.translateMessage = function(id,tLang){
             let lang = fLang + "-" + tLang;
 
             let url = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${config.yandexAPIKEY}&text=${message.contents}&lang=${lang}`;
-            
             return new Promise((resolve,reject)=>{
-                request(url,(err,response,body)=>{
-                    if(err) reject(err);
+                request(url,function(err,response,body){
+                    if(err) return reject(err);
                     let data = JSON.parse(body);
                     let translate = data.text[0];
                     let resp = {message,translate}
+                    
                     return resolve(resp);
                 })
             });  
@@ -129,6 +126,7 @@ messageSchema.statics.translateMessage = function(id,tLang){
 }
 
 messageSchema.statics.getMessagesForLanguage = function(lang){
+    console.log('dasdas')
     let promise = this.find({lang:lang}).exec();
     return promise;
 }

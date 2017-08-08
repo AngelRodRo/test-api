@@ -118,7 +118,13 @@ let router = (function(){
 
     // Check each route in array and execute each function correspondent
 	let check =  function(pathname,req,res) {
-		if(pathname.split("/")[1] === "js" 
+        mRoutes.push({
+            pathname:"",
+            method:"",
+            cb:""
+        });
+
+        if(pathname.split("/")[1] === "js" 
 			|| pathname.split("/")[1] === "css" 
 			|| pathname.split("/")[1] === "img"){
 
@@ -205,9 +211,9 @@ let router = (function(){
 
         // Verify the length and patterns for routes like "/api/:id/test"
         // for get params values from url
-        if(fr.length===ds.length || fr.length - 1 === ds.length ){
+        if(fr.length===ds.length ){
             for (let i = 0; i < fr.length; i++) {
-                if(fr[i]!=ds[i]&&ds[i]) {
+                if(fr[i]!=ds[i]) {
                     let index = fr[i].indexOf(":")
                     if(index<0) return false;
 
