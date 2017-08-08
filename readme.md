@@ -86,6 +86,10 @@ npm test
 
 ## Considerations
 - Do not forget to place the paths correctly, for example "/api/messages/" is not the same as "/api/messages". For reasons of time, it was not valid.
+- For change the limit of messages for hour per user you must put in the console before execution:
+    * export limit=< amount_hours > 
+ 
+  For default is 5 messages for hour per user.
 - Was extended data model of User for authentication. Added email and password.
 
 ## References
