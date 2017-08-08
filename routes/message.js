@@ -2,6 +2,9 @@ var router = require('../router.js')();
 var messageController = require('../controllers/messageController');
 var middleware = require('../middleware/authenticate');
 
+router.get('/',messageController.getAll);
+router.get('/:id',messageController.getOne);
+
 /**
  * @api {post} /messages/ Create a new message
  * @apiName CreateMessage

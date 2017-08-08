@@ -205,9 +205,9 @@ let router = (function(){
 
         // Verify the length and patterns for routes like "/api/:id/test"
         // for get params values from url
-        if(fr.length===ds.length){
+        if(fr.length===ds.length || fr.length - 1 === ds.length ){
             for (let i = 0; i < fr.length; i++) {
-                if(fr[i]!=ds[i]) {
+                if(fr[i]!=ds[i]&&ds[i]) {
                     let index = fr[i].indexOf(":")
                     if(index<0) return false;
 

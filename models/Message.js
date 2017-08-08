@@ -32,7 +32,6 @@ messageSchema.pre('save', function(next) {
         createdAt: { $gte: start, $lte: end },
         from: this.from
     },(err,count)=>{
-        console.log(count)
         if(count<=process.env.limit) next();
         let error = new Error('Limit of messages exceed, wait an hour please');
         next(error);

@@ -77,7 +77,28 @@ module.exports = {
     },
 
     getOne(req,res){
+        var id = req.params.id;
+        let error = {}
+        
+        Message.findOne({id:id}).exec().then((message)=>{
+            return res.json(message)
+        }).catch((err)=>{
+            error.message = "Check details for more information";
+            error.details = err.toString();
+            return res.status(503).send(err);            
+        })
+    },
 
+    getAll(req,res){
+        let promise =  Message.find({}).exec();
+        let error = {}
+        promise.then((messages)=>{
+            return res.json(messages)
+        }).catch((err)=>{
+            error.message = "Check details for more information";
+            error.details = err.toString();
+            return res.status(503).send(err);
+        })
     },
 
     delete(req,res){
