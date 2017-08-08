@@ -1,4 +1,4 @@
-# Test MetroDigi API REST
+# Test API REST
 
 ## Installation
 
@@ -75,7 +75,9 @@ npm run test
 ## References
 
 More details about it, check this: https://angelrodro.github.io./
+
 Test my api : https://test-metro.herokuapp.com/api/
+
 Check my github : 
 
 Thanks you! =)
