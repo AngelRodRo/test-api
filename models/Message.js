@@ -62,7 +62,6 @@ messageSchema.statics.createMessageFromUser = function(userId,data){
 }
 
 
-// TODO: Add validation for user if it isn't his message
 messageSchema.statics.updateMessageFromUser = function(userId,id,data){
     let promise = User.findOne({id:userId}).exec();
     let model = this;   
