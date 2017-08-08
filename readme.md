@@ -74,12 +74,12 @@ npm run test
 
 ## Examples
 
-    - /api/messages/1/translate/es
+- /api/messages/1/translate/es
 
-        * lang : It's the code of language. 
-            For example: 
-                [en - English, es - Spanish]
-            For more details visited: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+    * lang : It's the code of language. 
+        For example: 
+            [en - English, es - Spanish]
+        For more details visited: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 ## References
 
