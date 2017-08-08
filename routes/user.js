@@ -3,7 +3,7 @@ var userController = require('../controllers/userController');
 var middleware = require('../middleware/authenticate')
 
 /**
- * @api {post} /create Create a new user
+ * @api {post} /users/ Create a new user
  * @apiName CreateUser
  * 
  * @apiGroup User
@@ -28,7 +28,7 @@ var middleware = require('../middleware/authenticate')
 router.post('/', userController.create);
 
 /**
- * @api {post} /login Login a new user
+ * @api {post} /users/login Login a new user
  * @apiName LoginUser
  * 
  * @apiGroup User
